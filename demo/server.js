@@ -1,3 +1,5 @@
+var dbInfo = require('./dbInfo.json')
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -8,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 var db;
 
-dbLink = 'mongodb://mikesphx-admin:pillsNPotionsLiftMeUp@ds161049.mlab.com:61049/mbrboards-demo-db'
+dbLink = dbInfo.dbLink
 
 MongoClient.connect(dbLink, function(err, database) {
 	// start the server
