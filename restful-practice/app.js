@@ -11,9 +11,14 @@ var dbCredentials = require(__dirname + '/resources/my_database.js')
 mongoose.connect(dbCredentials.mLabUrl);
 var db = mongoose.connection;
 
+var path = require('path');
+app.use('/', express.static(path.join(__dirname, 'public')));
+
+/*
 app.get('/', function(request, response) {
 	response.send('Please use /api/books or /api/genres');
 });
+*/
 
 app.get('/api/genres', function(request, response) {
 	Genre.getGenres(function(error, genres) {
