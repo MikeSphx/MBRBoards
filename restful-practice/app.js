@@ -24,6 +24,8 @@ app.get('/', function(request, response) {
 });
 */
 
+app.use('/', routes);
+
 app.get('/api/genres', function(request, response) {
 	Genre.getGenres(function(error, genres) {
 		if (error) throw error;
