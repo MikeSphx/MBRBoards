@@ -1,6 +1,6 @@
 {
-  "name": "public",
-  "short_name": "public",
+  "name": "my-app",
+  "short_name": "my-app",
   "start_url": "/",
   "display": "standalone"
 }
