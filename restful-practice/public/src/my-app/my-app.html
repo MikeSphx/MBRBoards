@@ -5,6 +5,7 @@
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -40,6 +41,9 @@
       h2 {
         /*font-family: Raleway;*/
       }
+      iframe {
+        box-shadow: 0px 0px 4px #000000;
+      }
       paper-button {
         width: 100%;
         margin: 0px 0px 0px 0px;
@@ -57,6 +61,11 @@
         height: calc(100% - 80px);
         overflow: auto;
       }
+      #leaderboardButton {
+        width: 160px;
+        background-color: #F1F1F1;
+        color: #E53935;
+      }
       #leaderboardContainer {
         height: 400px;
         width: 80%;
@@ -71,7 +80,7 @@
         background-color: #E53935;
       }
       #leaderboardSubtitle {
-        margin: 200px 0px 20px 0px;
+        margin: 20px 0px 20px 0px;
         line-height: 115%;
         text-align: center;
         font-size: 170%;
@@ -113,6 +122,10 @@
       }
       .fullHeight {
         height: 100%;
+      }
+      .playerCardPic {
+        height: 80px;
+        width: 80px;
       }
       .whiteText {
         margin: 20px 60px 0px 0px;
@@ -178,9 +191,17 @@
 
                 <template is='dom-repeat' items='[[top3]]' as="item">
                   <div>
-                    <paper-card heading='[[item.name]]' class="fullWidth">
-                      <div class='card-content'>
-                        [[item.base_ap]]
+                    
+                    <paper-card class="fullWidth">
+                      
+                      <div class='card-content horizontal layout center'>
+                        <div class="playerCardPic vertical center-justified layout center">
+                          <!--<iron-image src="/img/ist.png"></iron-image>-->
+                          <iron-image src=[[item.pic_link]]></iron-image>
+                        </div>
+                        <div><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(item.base_ap)]]</div>
+                        <div style="width: 13%"></div>
+                        <div><b>AP:</b> [[item.base_ap]]<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
                       </div>  
                     </paper-card>
                   </div>
@@ -206,7 +227,7 @@
               <div id="leaderboardRight" class="flex vertical layout center">
                 <div id="leaderboardTitle">Top 3 Leaderboard</div>
                 <div id="leaderboardSubtitle" class="horizontal center-justified layout">Here are the current top contenders in Maplemation Battle Royale. To view the full leaderboard, click below.</div>
-                <paper-icon-button icon="search"></paper-icon-button>
+                <paper-button id="leaderboardButton" raised>LEADERBOARD</paper-button>
               </div>
             </div>
           </div>
@@ -284,8 +305,16 @@
           drawerLayout.drawer.toggle();
         }
       }
-
-
+      _emptyBind(str) {
+        return str ? str : 'None';
+      }
+      _calculateRank(num) {
+        if (num > 500) {
+          return 'S';
+        } else {
+          return 'C';
+        }
+      }
     }
 
     window.customElements.define(MyApp.is, MyApp);

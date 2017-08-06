@@ -5,8 +5,8 @@ var mongoose = require('mongoose');
 
 app.use(bodyParser.json());
 
-Genre = require(__dirname + '/models/genre.js');
-Book = require(__dirname + '/models/book.js');
+//Genre = require(__dirname + '/models/genre.js');
+//Book = require(__dirname + '/models/book.js');
 mbrUser = require(__dirname + '/models/mbr_user.js');
 
 var dbCredentials = require(__dirname + '/resources/my_database.js')
@@ -26,19 +26,19 @@ app.get('/', function(request, response) {
 
 //app.use('/', routes);
 
-app.get('/api/genres', function(request, response) {
-	Genre.getGenres(function(error, genres) {
-		if (error) throw error;
-		response.json(genres);
-	});
-});
+// app.get('/api/genres', function(request, response) {
+// 	Genre.getGenres(function(error, genres) {
+// 		if (error) throw error;
+// 		response.json(genres);
+// 	});
+// });
 
-app.get('/api/books', function(request, response) {
-	Book.getBooks(function(error, books) {
-		if (error) throw error;
-		response.json(books);
-	});
-});
+// app.get('/api/books', function(request, response) {
+// 	Book.getBooks(function(error, books) {
+// 		if (error) throw error;
+// 		response.json(books);
+// 	});
+// });
 
 app.get('/api/mbr_users', function(request, response) {
 	mbrUser.getMbrUsers(function(error, mbr_users) {

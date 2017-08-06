@@ -31,6 +31,17 @@ var mbrUserSchema = mongoose.Schema({
 	profile_link:{
 		type: String
 	},
+	record: {
+		wins: {
+			type: Number
+		},
+		losses: {
+			type: Number
+		},
+		ties: {
+			type: Number
+		}
+	},
 	medals:{
 		rivalry:{
 			type: Number
@@ -73,7 +84,7 @@ var mbrUserSchema = mongoose.Schema({
 	}
 });
 
-var mbrUser = module.exports = mongoose.model('mbr_user', mbrUserSchema);
+var mbrUser = module.exports = mongoose.model('mbr-user', mbrUserSchema);
 
 // Get MBR Users
 module.exports.getMbrUsers = function(callback, limit) {
