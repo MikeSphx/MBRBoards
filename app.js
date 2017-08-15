@@ -18,6 +18,12 @@ var db = mongoose.connection;
 var path = require('path');
 app.use('/', express.static(path.join(__dirname, 'public')));
 
+//app.get('/', function(request, response) {
+	//response.sendFile(path.join(__dirname, '/public/index.html'));
+	//response.send('Please use /api/books or /api/genres');
+//});
+//app.use(express.static(__dirname + 'public'));
+
 /*
 app.get('/', function(request, response) {
 	response.send('Please use /api/books or /api/genres');
@@ -67,6 +73,10 @@ app.get('/api/mbr_users/:_id', function(request, response) {
 		if (error) throw error;
 		response.json(mbr_user);
 	});
+});
+
+app.get('*', function(req, res) {
+	res.sendFile("public/index.html", {root: '.'});
 });
 
 app.listen(3000);

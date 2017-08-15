@@ -1,11 +1,13 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -138,6 +140,13 @@
         font-family: Raleway;
       }
     </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+    route="{{route}}"
+    pattern="/:page"
+    data="{{routeData}}"
+    tail="{{subroute}}"></app-route>
   
     <app-header-layout fullbleed>
       <app-header fixed slot="header">
@@ -150,90 +159,60 @@
       <app-drawer-layout id="drawerLayout">
         <app-drawer opened id="drawer" slot="drawer">
           <div id="drawerContent">
-
             <paper-button class="horizontal start-justified layout"><iron-icon icon="home"></iron-icon>Home</paper-button>
             <paper-button class="horizontal start-justified layout"><iron-icon icon="list"></iron-icon>Leaderboards</paper-button>
             <paper-button class="horizontal start-justified layout"><iron-icon icon="search"></iron-icon>Search</paper-button>
             <paper-button class="horizontal start-justified layout"><iron-icon icon="perm-identity"></iron-icon>Profiles</paper-button>
             <paper-button class="horizontal start-justified layout"><iron-icon icon="info"></iron-icon>About</paper-button>
-
           </div>
         </app-drawer>
 
-        <div id="siteContent">
-          <!-- <div>It's the remix to ignition, hot and fresh out the kitchen.</div>
-          <div>Featured Match</div>
-          <div>Top 5 Leaderboards</div>
-          <div>Top 5 Guild Leaderboards</div> -->
-          <div id="welcomeSection" class="horizontal center-justified layout center fullWidth">
-            <div id="welcomeContainer" class="horizontal layout">
-              <div id="welcomeTextContainer" class="flex whiteText vertical start-justified layout center">
-                <div>
-                  <div id="welcomeTitle">Welcome to MBR Boards!</div>
-                  For all things Maplemation<br>Battle Royale.
+        <iron-pages selected="[[routeData.page]]" attr-for-selected="name">
+          <div id="siteContent" name="home">
+            <div id="welcomeSection" class="horizontal center-justified layout center fullWidth">
+              <div id="welcomeContainer" class="horizontal layout">
+                <div id="welcomeTextContainer" class="flex whiteText vertical start-justified layout center">
+                  <div>
+                    <div id="welcomeTitle">Welcome to MBR Boards!</div>
+                    For all things Maplemation<br>Battle Royale.
+                  </div>
+                </div>
+                <div id="welcomeVidContainer" class="flex horizontal start-justified layout">
+                  <iframe width="560" height="315" src="https://www.youtube.com/embed/WGd8eFRib5M" frameborder="0" allowfullscreen></iframe>
                 </div>
               </div>
-              <div id="welcomeVidContainer" class="flex horizontal start-justified layout">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/WGd8eFRib5M" frameborder="0" allowfullscreen></iframe>
-              </div>
             </div>
-            <!-- <div id="leftWelcome" class="self-center vertical end-justified layout center fullHeight">
-              <div id="welcomeTitle" class="raleway">Welcome to MBR Boards!</div>
-              <div id="welcomeSubtitle" class="raleway">Watch this video to get started:</div>
-            </div>
-            <div id="rightWelcome" class="self-center fullHeight"></div> -->
-          </div>
-          <div id="leaderboardSection" class="horizontal center-justified layout center fullWidth">
-            <div id="leaderboardContainer" class="horizontal layout">
-              <div id="leaderboardLeft" class="flex vertical center-justified layout">
-
-<!-- Rank, Image, Name, Guild, AP, Wins, Ties, Losses -->
-
-                <template is='dom-repeat' items='[[top3]]' as="item">
-                  <div>
-                    
-                    <paper-card class="fullWidth">
+            <div id="leaderboardSection" class="horizontal center-justified layout center fullWidth">
+              <div id="leaderboardContainer" class="horizontal layout">
+                <div id="leaderboardLeft" class="flex vertical center-justified layout">
+                  <template is='dom-repeat' items='[[top3]]' as="item">
+                    <div>
                       
-                      <div class='card-content horizontal layout center'>
-                        <div class="playerCardPic vertical center-justified layout center">
-                          <!--<iron-image src="/img/ist.png"></iron-image>-->
-                          <iron-image src=[[item.pic_link]]></iron-image>
-                        </div>
-                        <div><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(item.base_ap)]]</div>
-                        <div style="width: 13%"></div>
-                        <div><b>AP:</b> [[item.base_ap]]<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
-                      </div>  
-                    </paper-card>
-                  </div>
-                </template>
-                  
-                <!-- <paper-card class="fullWidth">
-                  <div class="card-content">
-                    
-                    <b>2k</b><br><b>Wins:</b> 59<br><b>Losses:</b> 9
-                  </div>
-                </paper-card>
-                <paper-card class="fullWidth">
-                  <div class="card-content">
-                    <b>Lynus</b><br><b>Wins:</b> 37<br><b>Losses:</b> 10
-                  </div>
-                </paper-card>
-                <paper-card class="fullWidth">
-                  <div class="card-content">
-                    <b>Aquila</b><br><b>Wins:</b> 29<br><b>Losses:</b> 8
-                  </div>
-                </paper-card> -->
-              </div>
-              <div id="leaderboardRight" class="flex vertical layout center">
-                <div id="leaderboardTitle">Top 3 Leaderboard</div>
-                <div id="leaderboardSubtitle" class="horizontal center-justified layout">Here are the current top contenders in Maplemation Battle Royale. To view the full leaderboard, click below.</div>
-                <paper-button id="leaderboardButton" raised>LEADERBOARD</paper-button>
+                      <paper-card class="fullWidth">
+                        <div class='card-content horizontal layout center'>
+                          <div class="playerCardPic vertical center-justified layout center">
+                            <iron-image src=[[item.pic_link]]></iron-image>
+                          </div>
+                          <div><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(item.base_ap)]]</div>
+                          <div style="width: 13%"></div>
+                          <div><b>AP:</b> [[item.base_ap]]<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
+                        </div>  
+                      </paper-card>
+
+                    </div>
+                  </template>
+                </div>
+                <div id="leaderboardRight" class="flex vertical layout center">
+                  <div id="leaderboardTitle">Top 3 Leaderboard</div>
+                  <div id="leaderboardSubtitle" class="horizontal center-justified layout">Here are the current top contenders in Maplemation Battle Royale. To view the full leaderboard, click below.</div>
+                  <paper-button id="leaderboardButton" raised>LEADERBOARD</paper-button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </app-drawer-layout>
+        </iron-pages>
 
+      </app-drawer-layout>
     </app-header-layout>
 
     
@@ -285,6 +264,7 @@
       }
       connectedCallback() {
         super.connectedCallback();
+        console.log(this.routeData);
         // console.log('connected callback');
       }
       constructor() {

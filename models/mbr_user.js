@@ -93,7 +93,7 @@ module.exports.getMbrUsers = function(callback, limit) {
 
 // Get Top MBR Users
 module.exports.getTopMbrUsers = function(callback, limit) {
-	mbrUser.find(callback).sort({"base_ap": -1}).limit(limit);
+	mbrUser.find(callback).sort({"base_ap": -1}).limit(3);
 }
 
 // Get MBR User
