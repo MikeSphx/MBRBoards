@@ -1,0 +1,41 @@
+<!-- Load the Polymer.Element base class -->
+<link rel="import" href="./bower_components/polymer/polymer-element.html">
+
+
+
+<dom-module id="leaderboard-page">
+  <template>
+
+    <style is="custom-style" include="iron-flex iron-flex-alignment">
+
+      :host {
+        display: block;
+        position: relative;
+        overflow: hidden;
+      }
+
+    </style>
+
+    <div>
+      Hello
+    </div>
+
+  </template>
+
+  <script>
+
+    class LeaderboardPage extends Polymer.Element {
+
+      static get is() { return 'leaderboard-page' }
+
+      connectedCallback() {
+        super.connectedCallback();
+
+      }
+
+    }
+
+    customElements.define(LeaderboardPage.is, LeaderboardPage);
+
+  </script>
+</dom-module>
