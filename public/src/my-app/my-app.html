@@ -78,6 +78,11 @@
         width: 80%;
         /*background-color: black;*/
       }
+      #leaderboardPic {
+        margin: 12px 0px 0px 0px;
+        height: 140px;
+        width: 140px;
+      }
       #leaderboardRight {
         color: #f1f1f1;
         padding: 0px 0px 0px 80px;
@@ -167,14 +172,13 @@
             <paper-button on-tap="changePage" name="home" class="horizontal start-justified layout"><iron-icon icon="home"></iron-icon>Home</paper-button>
             <paper-button on-tap="changePage" name="leaderboard" class="horizontal start-justified layout"><iron-icon icon="list"></iron-icon>Leaderboard</paper-button>
             <paper-button on-tap="changePage" name="search" class="horizontal start-justified layout"><iron-icon icon="search"></iron-icon>Search</paper-button>
-            <paper-button on-tap="changePage" name="profiles" class="horizontal start-justified layout"><iron-icon icon="perm-identity"></iron-icon>Profiles</paper-button>
+            <paper-button on-tap="changePage" name="profiles" class="horizontal start-justified layout"><iron-icon icon="social:people"></iron-icon>Profiles</paper-button>
             <paper-button on-tap="changePage" name="about" class="horizontal start-justified layout"><iron-icon icon="info"></iron-icon>About</paper-button>
           </div>
         </app-drawer>
 
-        <iron-pages selected="[[routeData.page]]" attr-for-selected="name">
-        <!-- <iron-pages selected="0"> -->
-          <div id="siteContent" name="home">
+        <iron-pages selected="[[routeData.page]]" attr-for-selected="page">
+          <div id="siteContent" page="home">
             <div id="welcomeSection" class="horizontal center-justified layout center fullWidth">
               <div id="welcomeContainer" class="horizontal layout">
                 <div id="welcomeTextContainer" class="flex whiteText vertical start-justified layout center">
@@ -210,14 +214,15 @@
                 </div>
                 <div id="leaderboardRight" class="flex vertical layout center">
                   <div id="leaderboardTitle">Top 3 Leaderboard</div>
+                  <iron-image id="leaderboardPic" src="/img/trophyw.png" sizing="contain"></iron-image>
                   <div id="leaderboardSubtitle" class="horizontal center-justified layout">Here are the current top contenders in Maplemation Battle Royale. To view the full leaderboard, click below.</div>
-                  <paper-button id="leaderboardButton" raised>LEADERBOARD</paper-button>
+                  <paper-button id="leaderboardButton" on-tap="changePage" name="leaderboard" raised>LEADERBOARD</paper-button>
                 </div>
               </div>
             </div>
           </div>
 
-          <leaderboard-page name="leaderboard"></leaderboard-page>
+          <leaderboard-page page="leaderboard"></leaderboard-page>
         </iron-pages>
 
       </app-drawer-layout>
@@ -234,7 +239,6 @@
     </iron-ajax> -->
 
     <iron-ajax
-      auto
       id = "top3Request"
       url = "http://localhost:3000/api/mbr_users/top"
       handle-as = "json"
@@ -268,17 +272,12 @@
       ready() {
         super.ready();
         this.$.drawerButton.addEventListener('click', e => this._toggleMenu(e));
-        this.$.top3Request.generateRequest();
       }
       connectedCallback() {
         super.connectedCallback();
+        console.log('connected callback');
         console.log(this.routeData);
-        // console.log('connected callback');
-      }
-      constructor() {
-        super();
-        //console.log('hi');
-        //this.$.iajax.generateRequest();
+        this.$.top3Request.generateRequest();
       }
       changePage(e) {
         var targetPage = e.target.getAttribute('name');

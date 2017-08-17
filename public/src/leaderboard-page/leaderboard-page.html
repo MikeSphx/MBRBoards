@@ -1,11 +1,8 @@
 <!-- Load the Polymer.Element base class -->
-<link rel="import" href="./bower_components/polymer/polymer-element.html">
-
-
+<!-- <link rel="import" href="./bower_components/polymer/polymer-element.html"> -->
 
 <dom-module id="leaderboard-page">
   <template>
-
     <style is="custom-style" include="iron-flex iron-flex-alignment">
 
       :host {
@@ -14,28 +11,92 @@
         overflow: hidden;
       }
 
+      #container {
+        width: 60%;
+        height: 100%;
+        background-color: blue;
+      }
+      #main {
+        height: 800px;
+        background-color: red;
+      }
+
+      .fullWidth {
+        width: 100%;
+      }
+
     </style>
 
-    <div>
-      Hello
-    </div>
+    <div id="main" class=".fullWidth horizontal center-justified layout">
+      <div id="container">
 
+        <template is='dom-repeat' items='[[mbrUsers]]' as="item">
+          <div>
+            
+            <paper-card class="fullWidth">
+              <div class='card-content horizontal layout center'>
+                <div class="playerCardPic vertical center-justified layout center">
+                  <iron-image src=[[item.pic_link]]></iron-image>
+                </div>
+                <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(item.base_ap)]]</div>
+                <div class="flex"><b>AP:</b> [[item.base_ap]]<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
+                <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
+              </div>  
+            </paper-card>
+
+          </div>
+        </template>
+      </div>
+    </div>
+    <iron-ajax
+      id = "retrieveMbrUsers"
+      url = "http://localhost:3000/api/mbr_users/"
+      handle-as = "json"
+      on-response = "_handleMbrUsers">
+    </iron-ajax>
   </template>
 
   <script>
-
     class LeaderboardPage extends Polymer.Element {
 
-      static get is() { return 'leaderboard-page' }
+      static get is() { return 'leaderboard-page'; }
+
+      // Declare properties for the element's public API
+      static get properties() {
+        return {
+          mbrUsers: {
+            type: Array
+          }
+        }
+      }
 
       connectedCallback() {
         super.connectedCallback();
+        this.$.retrieveMbrUsers.generateRequest();
+      }
 
+      // Request handlers
+      _handleMbrUsers(data) {
+        var response = data.detail.response;
+        console.log(response);
+      }
+
+      // Helper functions
+      _emptyBind(str) {
+        return str ? str : 'None';
+      }
+      _calculateRank(num) {
+        if (num > 500) {
+          return 'S'; 
+        } else {
+          return 'C';
+        }
       }
 
     }
 
+    // Register the x-custom element with the browser
     customElements.define(LeaderboardPage.is, LeaderboardPage);
-
   </script>
+
 </dom-module>
