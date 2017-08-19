@@ -14,13 +14,34 @@
       #container {
         width: 60%;
         height: 100%;
-        background-color: blue;
+        /*background-color: blue;*/
       }
       #main {
         height: 800px;
-        background-color: red;
+        /*background-color: red;*/
       }
-
+      #top {
+        height: 100px;
+      }
+      #topMenu {
+        color: #E53935;
+      }
+      #topText {
+        color: #E53935;
+        font-size: 35px;
+        font-weight: bold;
+      }
+      .redText: {
+        color: #E53935;
+      }
+      .leaderboardCard {
+        margin: 5px 0px 5px 0px;
+      }
+      .playerCardPic {
+        height: 80px;
+        width: 80px;
+        margin: 0px 15px 0px 0px;
+      }
       .fullWidth {
         width: 100%;
       }
@@ -28,18 +49,22 @@
     </style>
 
     <div id="main" class=".fullWidth horizontal center-justified layout">
-      <div id="container">
+      <div id="container" class="vertical layout">
+        <div id="top" class="horizontal layout end">
+          <div id="topText">MBR Leaderboard</div>
+          <div class="flex"></div>
+          <div id="topMenu" class="redText">Sort by: </div>
+        </div>
 
         <template is='dom-repeat' items='[[mbrUsers]]' as="item">
           <div>
-            
-            <paper-card class="fullWidth">
+            <paper-card class="leaderboardCard fullWidth">
               <div class='card-content horizontal layout center'>
                 <div class="playerCardPic vertical center-justified layout center">
                   <iron-image src=[[item.pic_link]]></iron-image>
                 </div>
-                <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(item.base_ap)]]</div>
-                <div class="flex"><b>AP:</b> [[item.base_ap]]<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
+                <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(index)]]</div>
+                <div class="flex"><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
                 <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
               </div>  
             </paper-card>
@@ -49,6 +74,7 @@
       </div>
     </div>
     <iron-ajax
+      auto
       id = "retrieveMbrUsers"
       url = "http://localhost:3000/api/mbr_users/"
       handle-as = "json"
@@ -66,19 +92,23 @@
         return {
           mbrUsers: {
             type: Array
+          },
+          currentPage: {
+            type: Number,
+            value: 1
           }
         }
       }
 
       connectedCallback() {
         super.connectedCallback();
-        this.$.retrieveMbrUsers.generateRequest();
+        //this.$.retrieveMbrUsers.generateRequest();
       }
 
       // Request handlers
       _handleMbrUsers(data) {
         var response = data.detail.response;
-        console.log(response);
+        this.mbrUsers = data.detail.response;
       }
 
       // Helper functions
@@ -86,6 +116,9 @@
         return str ? str : 'None';
       }
       _calculateRank(num) {
+        return ((this.currentPage - 1) * 10) + num + 1;
+      }
+      _calculateClass(num) {
         if (num > 500) {
           return 'S'; 
         } else {
