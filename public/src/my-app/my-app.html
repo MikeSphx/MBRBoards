@@ -171,7 +171,7 @@
           <div id="drawerContent">
             <paper-button on-tap="changePage" name="home" class="horizontal start-justified layout"><iron-icon icon="home"></iron-icon>Home</paper-button>
             <paper-button on-tap="changePage" name="leaderboard" class="horizontal start-justified layout"><iron-icon icon="list"></iron-icon>Leaderboard</paper-button>
-            <paper-button on-tap="changePage" name="search" class="horizontal start-justified layout"><iron-icon icon="search"></iron-icon>Search</paper-button>
+            <!-- <paper-button on-tap="changePage" name="search" class="horizontal start-justified layout"><iron-icon icon="search"></iron-icon>Search</paper-button> -->
             <paper-button on-tap="changePage" name="profiles" class="horizontal start-justified layout"><iron-icon icon="social:people"></iron-icon>Profiles</paper-button>
             <paper-button on-tap="changePage" name="about" class="horizontal start-justified layout"><iron-icon icon="info"></iron-icon>About</paper-button>
           </div>
@@ -203,9 +203,9 @@
                           <div class="playerCardPic vertical center-justified layout center">
                             <iron-image src=[[item.pic_link]]></iron-image>
                           </div>
-                          <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(item.base_ap)]]</div>
-                          <div class="flex"><b>AP:</b> [[item.base_ap]]<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
-                          <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
+                          <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(index)]]</div>
+                          <div class="flex"><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
+                          <paper-icon-button on-tap="_goToProfile" profile="[[item.name]]|[[item.mm_id]]" icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
                         </div>  
                       </paper-card>
 
@@ -223,6 +223,7 @@
           </div>
 
           <leaderboard-page page="leaderboard"></leaderboard-page>
+          <div page="profiles">Profiles</div>
         </iron-pages>
 
       </app-drawer-layout>
@@ -288,6 +289,15 @@
         console.log(data.detail.response);
         //this.prop1 = data.detail.response;
       }
+      _cleanName(name) {
+        name = name.toLowerCase().replace(/[^a-zA-Z0-9-_]/g, '');
+        return name == '' ? 'null' : name;
+      }
+      _goToProfile(e) {
+        var profileName = this._cleanName(e.target.profile.split('|')[0]);
+        var profilePath = profileName + '.' + e.target.profile.split('|')[1];
+        this.set('route.path', '/profiles/'+profilePath);
+      }
       _toggleMenu(e) {
         var drawerLayout = this.$.drawerLayout;
         if (drawerLayout.forceNarrow || !drawerLayout.narrow) {
@@ -299,12 +309,15 @@
       _emptyBind(str) {
         return str ? str : 'None';
       }
-      _calculateRank(num) {
+      _calculateClass(num) {
         if (num > 500) {
           return 'S';
         } else {
           return 'C';
         }
+      }
+      _calculateRank(num) {
+        return num + 1;
       }
     }
 
