@@ -11,25 +11,46 @@
         overflow: hidden;
       }
 
+      a[disabled] {
+        color: #9E9E9E !important;
+        pointer-events: none;
+        cursor: default;
+      }
+
       #container {
         width: 60%;
         height: 100%;
         /*background-color: blue;*/
       }
       #main {
-        height: 800px;
+        height: 2000px;
         /*background-color: red;*/
       }
       #top {
-        height: 100px;
+        height: 130px;
       }
       #topMenu {
         color: #E53935;
+        margin: 0px 0px 10px 0px;
+        font-size: 17px;
+        font-weight: bold;
       }
-      #topText {
+      #topLeftTitle {
         color: #E53935;
         font-size: 35px;
         font-weight: bold;
+        /*margin: 0px 0px 10px 0px;*/
+      }
+      #topLeftMenu {
+        color: #E53935;
+        margin: 0px 0px 15px 0px;
+        font-size: 17px;
+        font-weight: bold;
+      }
+      #topLeftMenu a {
+        color: #E53935;
+        font-weight: normal;
+        font-style: italic;
       }
       .redText: {
         color: #E53935;
@@ -48,14 +69,25 @@
 
     </style>
 
+    <app-location route="{{route}}"></app-location>
+    <app-route id="appRoute"
+    route="{{route}}"
+    pattern="/leaderboard/:query"
+    data="{{routeData}}"
+    tail="{{subroute}}"></app-route>
+
     <div id="main" class=".fullWidth horizontal center-justified layout">
       <div id="container" class="vertical layout">
         <div id="top" class="horizontal layout end">
-          <div id="topText">MBR Leaderboard</div>
+          <div id="topLeft" class="vertical layout">
+            <div id="topLeftTitle">[ MBR Leaderboard ]</div>
+            <div id="topLeftMenu">Sort by: <a id="apLink" href="http://localhost:3000/leaderboard/sort=base_ap" class="[[test]]" disabled>AP</a> <a id="winsLink" onclick="_updateQuery()">Wins</a> <a id="mesosLink" href="http://localhost:3000/leaderboard/sort=meso">Mesos</a></div>
+          </div>
           <div class="flex"></div>
-          <div id="topMenu" class="redText">Sort by: </div>
+          <div id="topMenu"></div>
         </div>
 
+        <dom-if>
         <template is='dom-repeat' items='[[mbrUsers]]' as="item">
           <div>
             <paper-card class="leaderboardCard fullWidth">
@@ -65,18 +97,19 @@
                 </div>
                 <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(index)]]</div>
                 <div class="flex"><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
-                <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
+                <paper-icon-b.00m..utton icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
               </div>  
             </paper-card>
 
           </div>
         </template>
+        </dom-if>
       </div>
     </div>
+
     <iron-ajax
-      auto
       id = "retrieveMbrUsers"
-      url = "http://localhost:3000/api/mbr_users/"
+      url = "http://localhost:3000/api/mbr_users/leaderboard"
       handle-as = "json"
       on-response = "_handleMbrUsers">
     </iron-ajax>
@@ -96,19 +129,42 @@
           currentPage: {
             type: Number,
             value: 1
+          },
+          test: {
+            type: String,
+            value: 'disabled'
           }
         }
       }
 
+      static get observers() {
+        return [
+          '_queryChanged(routeData.query)'
+        ]
+      }
+
       connectedCallback() {
         super.connectedCallback();
-        //this.$.retrieveMbrUsers.generateRequest();
+
+        //console.log(this.routeData.query);
+
+
+        //disable correct link at top
+
+        this.$.retrieveMbrUsers.generateRequest();
+      }
+
+      resetLeaderboard() {
+        this.$.retrieveMbrUsers.url = "http://localhost:3000/api/mbr_users/leaderboard";
+        this.$.retrieveMbrUsers.generateRequest();
+        console.log('leaderboard reset');
       }
 
       // Request handlers
       _handleMbrUsers(data) {
-        var response = data.detail.response;
-        this.mbrUsers = data.detail.response;
+        //var response = data.detail.response;
+        //console.log(data.detail.response);
+        this.mbrUsers = data.detail.response.docs;
       }
 
       // Helper functions
@@ -125,7 +181,12 @@
           return 'C';
         }
       }
-
+      _queryChanged(query) {
+        console.log('query changed');
+      }
+      _updateQuery() {
+        console.log('updateQuery');
+      }
     }
 
     // Register the x-custom element with the browser

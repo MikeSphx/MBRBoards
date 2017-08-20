@@ -222,7 +222,7 @@
             </div>
           </div>
 
-          <leaderboard-page page="leaderboard"></leaderboard-page>
+          <leaderboard-page id="leaderboardElement" page="leaderboard"></leaderboard-page>
           <div page="profiles">Profiles</div>
         </iron-pages>
 
@@ -268,7 +268,16 @@
           top3: {
             type: Array
           }
+          // ,currentPage: {
+          //   type: String,
+          //   value: ''
+          // }
         };
+      }
+      static get observers() {
+        return [
+          '_pageChanged(routeData.page)'
+        ]
       }
       ready() {
         super.ready();
@@ -286,7 +295,6 @@
       }
       handleTop3Response(data) {
         this.top3 = data.detail.response;
-        console.log(data.detail.response);
         //this.prop1 = data.detail.response;
       }
       _cleanName(name) {
@@ -318,6 +326,14 @@
       }
       _calculateRank(num) {
         return num + 1;
+      }
+
+      // Route handlers
+      _pageChanged(page) {
+        // Entering leaderboard
+        if (page == 'leaderboard') {
+          this.$.leaderboardElement.resetLeaderboard();
+        }
       }
     }
 

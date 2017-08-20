@@ -68,12 +68,37 @@ app.get('/api/mbr_users/top', function(request, response) {
 	});
 });
 
-app.get('/api/mbr_users/:_id', function(request, response) {
-	mbrUser.getMbrUserById(request.params._id, function(error, mbr_user) {
-		if (error) throw error;
-		response.json(mbr_user);
-	});
+// app.get('/api/mbr_users/:_id', function(request, response) {
+// 	mbrUser.getMbrUserById(request.params._id, function(error, mbr_user) {
+// 		if (error) throw error;
+// 		response.json(mbr_user);
+// 	});
+// });
+
+app.get('/api/mbr_users/leaderboard', function(request, response) {
+	var search = request.query.search;
+	var sort = (typeof request.query.sort == 'undefined') ? 'base_ap' : request.query.sort;
+	var page = (typeof request.query.page == 'undefined') ? 1 : request.query.page;
+	
+	if (typeof search != 'undefined') {
+		console.log('search query');
+		// mbrUser.getMbrLeaderboardSearchPage(search, sort, page, function(error, mbrUsers) {
+		// 	if (error) throw error;
+		// 	response.json(mbrUsers);
+		// });
+	} else {
+		console.log('non-search query');
+		mbrUser.getMbrLeaderboardPage(sort, page, function(error, mbrUsers) {
+			if (error) throw error;
+			response.json(mbrUsers);
+		});
+	}
+	//console.log(sort);
+	//console.log(page);
+	//console.log(search);
 });
+
+// app.get('/api/mbr_users/leaderboard/')
 
 app.get('*', function(req, res) {
 	res.sendFile("public/index.html", {root: '.'});

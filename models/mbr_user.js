@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 
 // MBR User Schema
 var mbrUserSchema = mongoose.Schema({
@@ -83,6 +84,7 @@ var mbrUserSchema = mongoose.Schema({
 		}
 	}
 });
+mbrUserSchema.plugin(mongoosePaginate);
 
 var mbrUser = module.exports = mongoose.model('mbr-user', mbrUserSchema);
 
@@ -94,6 +96,30 @@ module.exports.getMbrUsers = function(callback, limit) {
 // Get Top MBR Users
 module.exports.getTopMbrUsers = function(callback, limit) {
 	mbrUser.find(callback).sort({"base_ap": -1}).limit(3);
+}
+
+// Get paginated/sorted MBR Users
+module.exports.getMbrLeaderboardPage = function(sortInput, pageInput, callback) {
+	var query = {};
+	var sortJson = {};
+	if (sortInput == 'win') {
+		sortJson = {'record.win': -1};
+	} else if (sortInput == 'meso') {
+		sortJson = {'meso': -1};
+	} else {
+		sortJson = {'base_ap': -1};
+	}
+	var options = {
+		sort: sortJson,
+		page: pageInput,
+		limit: 10
+	}
+	mbrUser.paginate({}, options, callback);
+}
+
+// Get search results MBR Users
+module.exports.getMbrLeaderboardSearchPage = function(query, sort, page, callback) {
+
 }
 
 // Get MBR User
