@@ -78,7 +78,7 @@ app.get('/api/mbr_users/top', function(request, response) {
 app.get('/api/mbr_users/leaderboard', function(request, response) {
 	var search = request.query.search;
 	var sort = (typeof request.query.sort == 'undefined') ? 'base_ap' : request.query.sort;
-	var page = (typeof request.query.page == 'undefined') ? 1 : request.query.page;
+	var page = (typeof request.query.page == 'undefined' || request.query.page < 1) ? 1 : request.query.page;
 	
 	if (typeof search != 'undefined') {
 		console.log('search query');
@@ -87,7 +87,7 @@ app.get('/api/mbr_users/leaderboard', function(request, response) {
 		// 	response.json(mbrUsers);
 		// });
 	} else {
-		console.log('non-search query');
+		//console.log('non-search query');
 		mbrUser.getMbrLeaderboardPage(sort, page, function(error, mbrUsers) {
 			if (error) throw error;
 			response.json(mbrUsers);

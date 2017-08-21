@@ -66,13 +66,22 @@
       .fullWidth {
         width: 100%;
       }
+      .sortButton {
+        padding: 0px 0px 0px 0px;
+        text-transform: capitalize;
+      }
 
     </style>
 
     <app-location route="{{route}}"></app-location>
     <app-route id="appRoute"
     route="{{route}}"
-    pattern="/leaderboard/:query"
+    pattern="/leaderboard/:sort/:page"
+    data="{{routeData}}"
+    tail="{{subroute}}"></app-route>
+    <app-route id="appRoute"
+    route="{{route}}"
+    pattern="/leaderboard/:sort/:page/:search"
     data="{{routeData}}"
     tail="{{subroute}}"></app-route>
 
@@ -81,7 +90,11 @@
         <div id="top" class="horizontal layout end">
           <div id="topLeft" class="vertical layout">
             <div id="topLeftTitle">[ MBR Leaderboard ]</div>
-            <div id="topLeftMenu">Sort by: <a id="apLink" href="http://localhost:3000/leaderboard/sort=base_ap" class="[[test]]" disabled>AP</a> <a id="winsLink" onclick="_updateQuery()">Wins</a> <a id="mesosLink" href="http://localhost:3000/leaderboard/sort=meso">Mesos</a></div>
+            <div id="topLeftMenu">Sort by:
+              <paper-button id="apSort" class="sortButton" on-click="_changeSort" sort="ap" raised style="min-width: 40px" disabled>AP</paper-button>
+              <paper-button id="winSort" class="sortButton" on-tap="_changeSort" sort="win" raised style="min-width: 60px">Wins</paper-button>
+              <paper-button id="mesoSort" class="sortButton" on-tap="_changeSort" sort="meso" raised style="min-width: 70px">Mesos</paper-button>
+            </div>
           </div>
           <div class="flex"></div>
           <div id="topMenu"></div>
@@ -97,7 +110,7 @@
                 </div>
                 <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(index)]]</div>
                 <div class="flex"><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
-                <paper-icon-b.00m..utton icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
+                <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
               </div>  
             </paper-card>
 
@@ -109,7 +122,7 @@
 
     <iron-ajax
       id = "retrieveMbrUsers"
-      url = "http://localhost:3000/api/mbr_users/leaderboard"
+      url = "http://localhost:3000/api/mbr_users/leaderboard?sort=ap&"
       handle-as = "json"
       on-response = "_handleMbrUsers">
     </iron-ajax>
@@ -133,28 +146,34 @@
           test: {
             type: String,
             value: 'disabled'
+          },
+          oldRouteData: {
+            type: Object
           }
         }
       }
 
       static get observers() {
         return [
-          '_queryChanged(routeData.query)'
+          '_sortChangeHandler(routeData.sort)'
         ]
       }
 
       connectedCallback() {
         super.connectedCallback();
 
-        //console.log(this.routeData.query);
-
-
-        //disable correct link at top
-
-        this.$.retrieveMbrUsers.generateRequest();
+        // TODO Known bug where routeData.page listener fires twice (https://github.com/PolymerElements/app-route/issues/129)
+        if (this.routeData != this.oldRouteData) {
+          this._updateRequest();
+          this.$.retrieveMbrUsers.generateRequest();
+        }
       }
 
       resetLeaderboard() {
+        this.$.apSort.setAttribute('disabled', '');
+        this.$.winSort.removeAttribute('disabled');
+        this.$.mesoSort.removeAttribute('disabled');
+
         this.$.retrieveMbrUsers.url = "http://localhost:3000/api/mbr_users/leaderboard";
         this.$.retrieveMbrUsers.generateRequest();
         console.log('leaderboard reset');
@@ -162,8 +181,6 @@
 
       // Request handlers
       _handleMbrUsers(data) {
-        //var response = data.detail.response;
-        //console.log(data.detail.response);
         this.mbrUsers = data.detail.response.docs;
       }
 
@@ -181,11 +198,44 @@
           return 'C';
         }
       }
-      _queryChanged(query) {
-        console.log('query changed');
+      _changeSort(e) {
+        //console.log(e.target.getAttribute('sort'));
+        if (typeof this.routeData.page != 'undefined') {
+          this.set('routeData.sort', e.target.getAttribute('sort'));
+        } else {
+          var sort = e.target.getAttribute('sort');
+          this.set('route.path', '/leaderboard/'+sort+'/1');
+        }
       }
-      _updateQuery() {
-        console.log('updateQuery');
+      _sortChangeHandler(sort) {
+        // TODO Known bug where routeData.page listener fires twice (https://github.com/PolymerElements/app-route/issues/129)
+        if (this.routeData != this.oldRouteData && typeof sort != 'undefined') {
+          this.oldRouteData = this.routeData;
+          if (sort == 'ap') {
+            this.$.apSort.setAttribute('disabled', '');
+            this.$.winSort.removeAttribute('disabled');
+            this.$.mesoSort.removeAttribute('disabled');
+          } else if (sort == 'win') {
+            this.$.winSort.setAttribute('disabled', '');
+            this.$.apSort.removeAttribute('disabled');
+            this.$.mesoSort.removeAttribute('disabled');
+          } else if (sort == 'meso') {
+            this.$.mesoSort.setAttribute('disabled', '');
+            this.$.apSort.removeAttribute('disabled');
+            this.$.winSort.removeAttribute('disabled');
+          }
+          this._updateRequest();
+          this.$.retrieveMbrUsers.generateRequest();
+        }
+      }
+      _updateRequest() {
+        //TODO could be sending user input into GET query?
+        var sort = (typeof this.routeData.sort == 'undefined') ? '' : ('sort='+this.routeData.sort+'&');
+        var page = (typeof this.routeData.page == 'undefined') ? '' : ('page='+this.routeData.page+'&');
+        var search = (typeof this.routeData.search == 'undefined') ? '' : ('search='+this.routeData.search);
+        var newUrl = "http://localhost:3000/api/mbr_users/leaderboard?"+sort+page+search;
+        this.$.retrieveMbrUsers.url = newUrl;
+        console.log('request updated: ' + newUrl);
       }
     }
 

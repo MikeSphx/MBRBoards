@@ -100,6 +100,7 @@ module.exports.getTopMbrUsers = function(callback, limit) {
 
 // Get paginated/sorted MBR Users
 module.exports.getMbrLeaderboardPage = function(sortInput, pageInput, callback) {
+	// TODO Move logic out of here and into app.js
 	var query = {};
 	var sortJson = {};
 	if (sortInput == 'win') {

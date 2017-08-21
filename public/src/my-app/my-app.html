@@ -291,7 +291,15 @@
       }
       changePage(e) {
         var targetPage = e.target.getAttribute('name');
-        this.set('routeData.page', targetPage);
+        if (targetPage == 'leaderboard' && this.routeData.page != 'leaderboard') {
+          this.set('route.path', '/leaderboard/ap/1');
+        } else {
+          this.set('routeData.page', targetPage);
+        }
+        // if (targetPage == 'leaderboard' && this.routeData.page != 'leaderboard') {
+        //   this.$.leaderboardElement.resetLeaderboard();
+        // }
+        
       }
       handleTop3Response(data) {
         this.top3 = data.detail.response;
@@ -332,7 +340,7 @@
       _pageChanged(page) {
         // Entering leaderboard
         if (page == 'leaderboard') {
-          this.$.leaderboardElement.resetLeaderboard();
+          //this.$.leaderboardElement.resetLeaderboard();
         }
       }
     }
