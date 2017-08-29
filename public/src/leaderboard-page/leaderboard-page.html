@@ -67,6 +67,16 @@
       .fullWidth {
         width: 100%;
       }
+      .pageButton {
+        padding: 0px 0px 0px 0px;
+        color: #E53935;
+        font-size: 17px;
+        font-weight: bold;
+        text-transform: capitalize;
+      }
+      .pageButton[disabled] {
+        color: #a8a8a8;
+      }
       .sortButton {
         padding: 0px 0px 0px 0px;
         text-transform: capitalize;
@@ -77,12 +87,12 @@
     <app-location route="{{route}}"></app-location>
     <app-route id="appRoute"
     route="{{route}}"
-    pattern="/leaderboard/:sort/:page"
+    pattern="/leaderboard/:sort/:leaderboardPage"
     data="{{routeData}}"
     tail="{{subroute}}"></app-route>
     <app-route id="appRoute"
     route="{{route}}"
-    pattern="/leaderboard/:sort/:page/:search"
+    pattern="/leaderboard/:sort/:leaderboardPage/:search"
     data="{{routeData}}"
     tail="{{subroute}}"></app-route>
 
@@ -118,6 +128,17 @@
           </div>
         </template>
         </dom-if>
+
+        <div id="bottom" class="horizontal center-justified layout">
+          <paper-button id="firstPage" class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">First</paper-button>
+          <!-- <paper-button id="prevPage" class="sortButton" on-click="_changePage" page-to$="[[_determinePageTo('prev')]]" raised style="min-width: 50px">Prev</paper-button> -->
+          <template is='dom-repeat' items='[[pageArray]]' as="item">
+            <!-- <paper-button class$="[[_setPageButtonClass(item)]]" on-click="_changePage" page-to$="[[item]]" raised style="min-width: 50px" disabled$=[[]]>[[item]]</paper-button> -->
+            <paper-button class="pageButton" on-click="_changePage" page-to$="[[item]]" raised style="min-width: 50px" disabled$=[[_setPageButtonDisable(item)]]>[[item]]</paper-button>
+          </template>
+          <!-- <paper-button id="nextPage" class="sortButton" on-click="_changePage" page-to$="[[_determinePageTo('next')]]" raised style="min-width: 50px">Next</paper-button> -->
+          <paper-button id="lastPage" class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">Last</paper-button>
+        </div>
       </div>
     </div>
 
@@ -150,6 +171,9 @@
           },
           oldRouteData: {
             type: Object
+          },
+          pageArray: {
+            type: Array
           }
         }
       }
@@ -163,7 +187,12 @@
       connectedCallback() {
         super.connectedCallback();
 
-        // TODO Known bug where routeData.page listener fires twice (https://github.com/PolymerElements/app-route/issues/129)
+        this.currentPage = parseInt(this.routeData.leaderboardPage);
+        this._generatePageArray();
+        console.log(this.currentPage);
+        console.log(this.pageArray);
+
+        // TODO Known bug where routeData.leaderboardPage listener fires twice (https://github.com/PolymerElements/app-route/issues/129)
         if (this.routeData != this.oldRouteData) {
           this._updateRequest();
           this.$.retrieveMbrUsers.generateRequest();
@@ -177,6 +206,7 @@
 
         this.$.retrieveMbrUsers.url = "http://localhost:3000/api/mbr_users/leaderboard";
         this.$.retrieveMbrUsers.generateRequest();
+        this.currentPage = 1;
         console.log('leaderboard reset');
       }
 
@@ -199,17 +229,30 @@
           return 'C';
         }
       }
+      _changePage(e) {
+        this.currentPage = e.target.getAttribute('page-to');
+        this._generatePageArray();
+        console.log(this.pageArray);
+        this.set('routeData.leaderboardPage', e.target.getAttribute('page-to'));
+      }
       _changeSort(e) {
         //console.log(e.target.getAttribute('sort'));
-        if (typeof this.routeData.page != 'undefined') {
+        if (typeof this.routeData.leaderboardPage != 'undefined') {
           this.set('routeData.sort', e.target.getAttribute('sort'));
         } else {
           var sort = e.target.getAttribute('sort');
           this.set('route.path', '/leaderboard/'+sort+'/1');
         }
       }
+      _generatePageArray() {
+        var calcPage = (this.currentPage < 3) ? 3 : parseInt(this.currentPage);
+        this.pageArray = [calcPage - 2, calcPage - 1, calcPage, calcPage + 1, calcPage + 2];
+      }
+      _setPageButtonDisable(page) {
+        return page == this.currentPage;
+      }
       _sortChangeHandler(sort) {
-        // TODO Known bug where routeData.page listener fires twice (https://github.com/PolymerElements/app-route/issues/129)
+        // TODO Known bug where routeData.leaderboardPage listener fires twice (https://github.com/PolymerElements/app-route/issues/129)
         if (this.routeData != this.oldRouteData && typeof sort != 'undefined') {
           this.oldRouteData = this.routeData;
           if (sort == 'ap') {
@@ -232,7 +275,7 @@
       _updateRequest() {
         //TODO could be sending user input into GET query?
         var sort = (typeof this.routeData.sort == 'undefined') ? '' : ('sort='+this.routeData.sort+'&');
-        var page = (typeof this.routeData.page == 'undefined') ? '' : ('page='+this.routeData.page+'&');
+        var page = (typeof this.routeData.leaderboardPage == 'undefined') ? '' : ('page='+this.routeData.leaderboardPage+'&');
         var search = (typeof this.routeData.search == 'undefined') ? '' : ('search='+this.routeData.search);
         var newUrl = "http://localhost:3000/api/mbr_users/leaderboard?"+sort+page+search;
         this.$.retrieveMbrUsers.url = newUrl;
