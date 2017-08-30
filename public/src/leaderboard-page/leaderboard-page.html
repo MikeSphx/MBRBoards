@@ -122,14 +122,6 @@
           </div>
         </div>
 
-<!--         <div id="topPageSelector" class="fullWidth horizontal center-justified layout center">
-          <paper-button class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">First</paper-button>
-          <template is='dom-repeat' items='[[pageArray]]' as="item">
-            <paper-button class="pageButton" on-click="_changePage" page-to$="[[item.page]]" raised style="min-width: 50px" disabled$=[[item.disabled]]>[[item.page]]</paper-button>
-          </template>
-          <paper-button class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">Last</paper-button>
-        </div> -->
-
         <dom-if>
         <template is='dom-repeat' items='[[mbrUsers]]' as="item">
           <div>

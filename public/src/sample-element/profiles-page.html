@@ -1,0 +1,74 @@
+<!-- Load the Polymer.Element base class -->
+<link rel="import" href="./bower_components/polymer/polymer-element.html">
+
+
+
+<dom-module id="profiles-page">
+  <template>
+
+    <style is="custom-style" include="iron-flex iron-flex-alignment">
+
+      :host {
+        display: block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #main {
+        height: 1500px;
+        /*background-color: red;*/
+      }
+      #container {
+        width: 60%;
+        height: 100%;
+        /*background-color: blue;*/
+      }
+      .fullWidth {
+        width: 100%;
+      }
+
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <!-- General view (search + non-filtered grid) -->
+    <app-route id="appRoute"
+    route="{{route}}"
+    pattern="/profiles"
+    data="{{routeData}}"
+    tail="{{subroute}}"></app-route>
+    <!-- Search view, search + filtered grid -->
+    <app-route id="appRoute"
+    route="{{route}}"
+    pattern="/profiles/search/:profilesQuery"
+    data="{{routeData}}"
+    tail="{{subroute}}"></app-route>
+    <!-- Profile view -->
+    <app-route id="appRoute"
+    route="{{route}}"
+    pattern="/profiles/:user"
+    data="{{routeData}}"
+    tail="{{subroute}}"></app-route>
+
+    <div>
+      Hello
+    </div>
+
+  </template>
+
+  <script>
+
+    class ProfilesPage extends Polymer.Element {
+
+      static get is() { return 'profiles-page' }
+
+      connectedCallback() {
+        super.connectedCallback();
+
+      }
+
+    }
+
+    customElements.define(ProfilesPage.is, ProfilesPage);
+
+  </script>
+</dom-module>
