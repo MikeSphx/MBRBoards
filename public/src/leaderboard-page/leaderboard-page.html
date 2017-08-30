@@ -16,7 +16,9 @@
         pointer-events: none;
         cursor: default;
       }
-
+      #bottom {
+        margin: 15px 0px 0px 0px;
+      }
       #container {
         width: 60%;
         height: 100%;
@@ -31,7 +33,7 @@
       }
       #topMenu {
         color: #E53935;
-        margin: 0px 0px 10px 0px;
+        margin: 0px 0px 15px 0px;
         font-size: 17px;
         font-weight: bold;
       }
@@ -52,6 +54,9 @@
         color: #E53935;
         font-weight: normal;
         font-style: italic;
+      }
+      #topPageSelector {
+        height: 40px;
       }
       .redText: {
         color: #E53935;
@@ -108,8 +113,22 @@
             </div>
           </div>
           <div class="flex"></div>
-          <div id="topMenu"></div>
+          <div id="topMenu" class="horizontal layout">
+            <paper-button class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">First</paper-button>
+            <template is='dom-repeat' items='[[pageArray]]' as="item">
+              <paper-button class="pageButton" on-click="_changePage" page-to$="[[item.page]]" raised style="min-width: 50px" disabled$=[[item.disabled]]>[[item.page]]</paper-button>
+            </template>
+            <paper-button class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">Last</paper-button>
+          </div>
         </div>
+
+<!--         <div id="topPageSelector" class="fullWidth horizontal center-justified layout center">
+          <paper-button class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">First</paper-button>
+          <template is='dom-repeat' items='[[pageArray]]' as="item">
+            <paper-button class="pageButton" on-click="_changePage" page-to$="[[item.page]]" raised style="min-width: 50px" disabled$=[[item.disabled]]>[[item.page]]</paper-button>
+          </template>
+          <paper-button class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">Last</paper-button>
+        </div> -->
 
         <dom-if>
         <template is='dom-repeat' items='[[mbrUsers]]' as="item">
@@ -119,7 +138,7 @@
                 <div class="playerCardPic vertical center-justified layout center">
                   <iron-image src=[[item.pic_link]]></iron-image>
                 </div>
-                <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[_calculateRank(index)]]</div>
+                <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[item.rank]]</div>
                 <div class="flex"><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
                 <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
               </div>  
@@ -133,8 +152,7 @@
           <paper-button id="firstPage" class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">First</paper-button>
           <!-- <paper-button id="prevPage" class="sortButton" on-click="_changePage" page-to$="[[_determinePageTo('prev')]]" raised style="min-width: 50px">Prev</paper-button> -->
           <template is='dom-repeat' items='[[pageArray]]' as="item">
-            <!-- <paper-button class$="[[_setPageButtonClass(item)]]" on-click="_changePage" page-to$="[[item]]" raised style="min-width: 50px" disabled$=[[]]>[[item]]</paper-button> -->
-            <paper-button class="pageButton" on-click="_changePage" page-to$="[[item]]" raised style="min-width: 50px" disabled$=[[_setPageButtonDisable(item)]]>[[item]]</paper-button>
+            <paper-button class="pageButton" on-click="_changePage" page-to$="[[item.page]]" raised style="min-width: 50px" disabled$=[[item.disabled]]>[[item.page]]</paper-button>
           </template>
           <!-- <paper-button id="nextPage" class="sortButton" on-click="_changePage" page-to$="[[_determinePageTo('next')]]" raised style="min-width: 50px">Next</paper-button> -->
           <paper-button id="lastPage" class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">Last</paper-button>
@@ -173,7 +191,12 @@
             type: Object
           },
           pageArray: {
-            type: Array
+            type: Array,
+            value: [{page: 0, disabled: true},
+                    {page: 0, disabled: true},
+                    {page: 0, disabled: true},
+                    {page: 0, disabled: true},
+                    {page: 0, disabled: true}]
           }
         }
       }
@@ -181,6 +204,8 @@
       static get observers() {
         return [
           '_sortChangeHandler(routeData.sort)'
+          // ,
+          // '_leaderboardPageChanceHandler(routeData.leaderboardPage)'
         ]
       }
 
@@ -189,8 +214,6 @@
 
         this.currentPage = parseInt(this.routeData.leaderboardPage);
         this._generatePageArray();
-        console.log(this.currentPage);
-        console.log(this.pageArray);
 
         // TODO Known bug where routeData.leaderboardPage listener fires twice (https://github.com/PolymerElements/app-route/issues/129)
         if (this.routeData != this.oldRouteData) {
@@ -212,7 +235,12 @@
 
       // Request handlers
       _handleMbrUsers(data) {
-        this.mbrUsers = data.detail.response.docs;
+        var result = data.detail.response.docs;
+        // Add a rank parameter to each object for the leaderboard
+        for (var i = 0; i < result.length; i++) {
+          result[i].rank = ((this.currentPage - 1) * 10) + i + 1;
+        }
+        this.mbrUsers = result;
       }
 
       // Helper functions
@@ -220,6 +248,7 @@
         return str ? str : 'None';
       }
       _calculateRank(num) {
+        console.log(this.currentPage);
         return ((this.currentPage - 1) * 10) + num + 1;
       }
       _calculateClass(num) {
@@ -230,13 +259,13 @@
         }
       }
       _changePage(e) {
+        console.log('changePage');
         this.currentPage = e.target.getAttribute('page-to');
         this._generatePageArray();
-        console.log(this.pageArray);
+        //this._disableCurrentPageButton();
         this.set('routeData.leaderboardPage', e.target.getAttribute('page-to'));
       }
       _changeSort(e) {
-        //console.log(e.target.getAttribute('sort'));
         if (typeof this.routeData.leaderboardPage != 'undefined') {
           this.set('routeData.sort', e.target.getAttribute('sort'));
         } else {
@@ -244,12 +273,20 @@
           this.set('route.path', '/leaderboard/'+sort+'/1');
         }
       }
+      _disableCurrentPageButton() {
+        console.log('_disableCurrentPageButton');
+        console.log(this.currentPage);
+        var button = document.getElementById('page'+this.currentPage.toString());
+        console.log('page'+this.currentPage.toString());
+        console.log(button);
+      }
       _generatePageArray() {
         var calcPage = (this.currentPage < 3) ? 3 : parseInt(this.currentPage);
-        this.pageArray = [calcPage - 2, calcPage - 1, calcPage, calcPage + 1, calcPage + 2];
-      }
-      _setPageButtonDisable(page) {
-        return page == this.currentPage;
+        this.pageArray = [{page: calcPage - 2, disabled: (calcPage - 2) == this.currentPage},
+                          {page: calcPage - 1, disabled: (calcPage - 1) == this.currentPage},
+                          {page: calcPage, disabled: calcPage == this.currentPage},
+                          {page: calcPage + 1, disabled: (calcPage + 1) == this.currentPage},
+                          {page: calcPage + 2, disabled: (calcPage + 2) == this.currentPage}];
       }
       _sortChangeHandler(sort) {
         // TODO Known bug where routeData.leaderboardPage listener fires twice (https://github.com/PolymerElements/app-route/issues/129)
@@ -279,6 +316,8 @@
         var search = (typeof this.routeData.search == 'undefined') ? '' : ('search='+this.routeData.search);
         var newUrl = "http://localhost:3000/api/mbr_users/leaderboard?"+sort+page+search;
         this.$.retrieveMbrUsers.url = newUrl;
+        this.currentPage = parseInt(this.routeData.leaderboardPage);
+        this._generatePageArray();
         console.log('request updated: ' + newUrl);
       }
     }
