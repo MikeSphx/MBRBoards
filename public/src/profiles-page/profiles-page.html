@@ -18,13 +18,58 @@
         height: 1500px;
         /*background-color: red;*/
       }
-      #container {
+
+      #top {
+        height: 400px;
+      }
+      #topImage {
+        height: 400px;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        z-index: -1;
+      }
+      #topContainer {
         width: 60%;
         height: 100%;
-        /*background-color: blue;*/
+      }
+      #topContainerSearchMenu {
+        width: 80%;
+        height: 45px;
+      }
+      #topContainerSearchBar {
+        margin: 0px 5px 0px 0px;
+      }
+      #topContainerText {
+        margin: 0px 0px 20px 0px;
+        color: #ffffff;
+        font-weight: bolder;
+        font-size: 350%;
+        line-height: 110%;
+        text-shadow: 2px 2px 3px #000000;
+      }
+      #searchBar {
+        --paper-input-container: {
+            height: 40px;
+            padding: 0px 8px 0px 8px;
+            position: relative;
+            bottom: 8px;
+        };
+        --paper-input-container-focus-color: #E53935;
+      }
+      .full {
+        width: 100%;
+        height: 100%;
       }
       .fullWidth {
         width: 100%;
+      }
+      .searchMenuButton {
+/*        background-color: #f1f1f1;
+        color: #E53935;;*/
+        min-width: 50px;
+        background-color: #E53935;
+        color: #f1f1f1;
       }
 
     </style>
@@ -49,8 +94,22 @@
     data="{{routeData}}"
     tail="{{subroute}}"></app-route>
 
-    <div>
-      Hello
+    <div id="main">
+      <div id="top" class="fullWidth horizontal center-justified layout">
+        <iron-image id="topImage" class="full" src="./img/collo.png" sizing="cover"></iron-image>
+        <div id="topContainer" class="full vertical center-justified layout center">
+          <div id="topContainerText">
+            <span>MBR Profiles</span>
+          </div>
+          <div id="topContainerSearchMenu" class="horizontal center-justified layout">
+            <paper-card id="topContainerSearchBar" class="flex">
+              <paper-input id="searchBar" class="full" placeholder="Search"></paper-input>
+            </paper-card>
+            <paper-button class="searchMenuButton" raised><iron-icon icon="search"></iron-icon></paper-button>
+            <paper-button class="searchMenuButton" raised><iron-icon icon="refresh"></iron-icon></paper-button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </template>
@@ -65,6 +124,8 @@
         super.connectedCallback();
 
       }
+
+
 
     }
 
