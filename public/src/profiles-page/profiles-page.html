@@ -1,6 +1,4 @@
 <!-- Load the Polymer.Element base class -->
-<link rel="import" href="./bower_components/polymer/polymer-element.html">
-
 
 
 <dom-module id="profiles-page">
@@ -19,8 +17,13 @@
         /*background-color: red;*/
       }
 
+      #bottom {
+        height: 1100px;
+/*        background-color: #424242;*/
+      }
       #top {
         height: 400px;
+        margin: 0px 0px 10px 0px;
       }
       #topImage {
         height: 400px;
@@ -57,12 +60,35 @@
         };
         --paper-input-container-focus-color: #E53935;
       }
+      .bottomPageMenu {
+        padding: 10px 0px 10px 0px;
+      }
       .full {
         width: 100%;
         height: 100%;
       }
       .fullWidth {
         width: 100%;
+      }
+      .leaderboardCard {
+        width: 285px;
+        height: 114px;
+      }
+      .pageButton {
+        padding: 0px 0px 0px 0px;
+/*        background-color: #ffffff;*/
+        color: #E53935;
+        font-size: 17px;
+        font-weight: bold;
+        text-transform: capitalize;
+      }
+      .pageButton[disabled] {
+        color: #a8a8a8;
+      }
+      .playerCardPic {
+        height: 80px;
+        width: 80px;
+        margin: 0px 15px 0px 0px;
       }
       .searchMenuButton {
 /*        background-color: #f1f1f1;
@@ -78,7 +104,7 @@
     <!-- General view (search + non-filtered grid) -->
     <app-route id="appRoute"
     route="{{route}}"
-    pattern="/profiles"
+    pattern="/profiles/:profilesPage"
     data="{{routeData}}"
     tail="{{subroute}}"></app-route>
     <!-- Search view, search + filtered grid -->
@@ -90,7 +116,7 @@
     <!-- Profile view -->
     <app-route id="appRoute"
     route="{{route}}"
-    pattern="/profiles/:user"
+    pattern="/profiles/user/:user"
     data="{{routeData}}"
     tail="{{subroute}}"></app-route>
 
@@ -110,7 +136,40 @@
           </div>
         </div>
       </div>
+      
+      <div id="bottom" class="vertical layout center">
+        <div class="bottomPageMenu" class="horizontal layout">
+          <paper-button class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">First</paper-button>
+          <template is='dom-repeat' items='[[pageArray]]' as="item">
+            <paper-button class="pageButton" on-click="_changePage" page-to$="[[item.page]]" raised style="min-width: 50px" disabled$=[[item.disabled]]>[[item.page]]</paper-button>
+          </template>
+          <paper-button class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">Last</paper-button>
+        </div>
+        <iron-list items="[[mbrUsers]]" class="fullWidth flex" as="item" grid>
+          <template>
+            <paper-card class="leaderboardCard">
+              <div class='card-content horizontal layout center'>
+              <div class="playerCardPic vertical center-justified layout center">
+                <iron-image src=[[item.pic_link]]></iron-image>
+              </div>
+              <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class</div>
+                <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
+              </div>  
+            </paper-card>
+          </template>
+
+        </iron-list>
+
+      </div>
+
     </div>
+
+    <iron-ajax
+      id = "retrieveMbrUsers"
+      url = "http://localhost:3000/api/mbr_users/alphabetical?limit=10&page=1"
+      handle-as = "json"
+      on-response = "_handleMbrUsers">
+    </iron-ajax>
 
   </template>
 
@@ -120,9 +179,62 @@
 
       static get is() { return 'profiles-page' }
 
+      static get properties() {
+        return {
+          mbrUsers: {
+            type: Array
+          },
+          currentPage: {
+            type: Number,
+            value: 1
+          },
+          oldRouteData: {
+            type: Object
+          },
+          pageArray: {
+            type: Array,
+            value: [{page: 1, disabled: true},
+                    {page: 2, disabled: false},
+                    {page: 3, disabled: false},
+                    {page: 4, disabled: false},
+                    {page: 5, disabled: false}]
+          }
+        }
+      }
+
       connectedCallback() {
         super.connectedCallback();
+        console.log('profiles callback');
+        this.$.retrieveMbrUsers.generateRequest();
+      }
 
+      //Helper functions
+      _emptyBind(str) {
+        return str ? str : 'None';
+      }
+      _changePage(e) {
+        this.currentPage = e.target.getAttribute('page-to');
+        this._changePageArray();
+      }
+      _changePageArray() {
+        var calcPage = (this.currentPage < 3) ? 3 : parseInt(this.currentPage);
+        this.pageArray = [{page: calcPage - 2, disabled: (calcPage - 2) == this.currentPage},
+                          {page: calcPage - 1, disabled: (calcPage - 1) == this.currentPage},
+                          {page: calcPage, disabled: calcPage == this.currentPage},
+                          {page: calcPage + 1, disabled: (calcPage + 1) == this.currentPage},
+                          {page: calcPage + 2, disabled: (calcPage + 2) == this.currentPage}];
+      }
+      _handleMbrUsers(data) {
+        this.mbrUsers = data.detail.response.docs;
+        console.log(this.mbrUsers);
+      }
+      _resetPage() {
+        this.currentPage = 1;
+        this.pageArray = [{page: 1, disabled: true},
+                          {page: 2, disabled: false},
+                          {page: 3, disabled: false},
+                          {page: 4, disabled: false},
+                          {page: 5, disabled: false}];
       }
 
 

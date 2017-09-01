@@ -53,6 +53,15 @@ app.get('/api/mbr_users', function(request, response) {
 	});
 });
 
+app.get('/api/mbr_users/alphabetical', function(request, response) {
+	var limit = parseInt(request.query.limit);
+	var page = parseInt(request.query.page);
+	mbrUser.getAlphabeticalMbrUsers(page, limit, function(error, mbr_users) {
+		if (error) throw error;
+		response.json(mbr_users);
+	});
+});
+
 app.post('/api/mbr_users', function(request, response) {
 	var newMbrUser = request.body;
 	mbrUser.addMbrUser(newMbrUser, function(error, newMbrUser) {

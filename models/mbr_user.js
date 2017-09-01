@@ -98,6 +98,17 @@ module.exports.getTopMbrUsers = function(callback, limit) {
 	mbrUser.find(callback).sort({"base_ap": -1}).limit(3);
 }
 
+// Get Top MBR Users
+module.exports.getAlphabeticalMbrUsers = function(page, limit, callback) {
+	console.log(page);
+	var options = {
+		sort: {'name': 1},
+		page: page,
+		limit: limit
+	}
+	mbrUser.paginate({}, options, callback);
+}
+
 // Get paginated/sorted MBR Users
 module.exports.getMbrLeaderboardPage = function(sortInput, pageInput, callback) {
 	// TODO Move logic out of here and into app.js
