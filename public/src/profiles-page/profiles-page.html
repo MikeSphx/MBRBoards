@@ -11,7 +11,12 @@
         position: relative;
         overflow: hidden;
       }
-
+      iron-list {
+        --iron-list-items-container: {
+          width: 1600px;
+          margin: 10px 0px 0px 0px;
+        };
+      }
       #main {
         height: 1500px;
         /*background-color: red;*/
@@ -37,7 +42,7 @@
         height: 100%;
       }
       #topContainerSearchMenu {
-        width: 80%;
+        width: 100%;
         height: 45px;
       }
       #topContainerSearchBar {
@@ -70,9 +75,17 @@
       .fullWidth {
         width: 100%;
       }
-      .leaderboardCard {
-        width: 285px;
-        height: 114px;
+      .leaderboardGridItem {
+        width: 300px;
+        height: 124px;
+        padding: 5px;
+      }
+      .leaderboardCard2 {
+        height: 100%;
+        width: 100%;
+        --paper-card-content: {
+          padding: 16px 16px 16px 8px;
+        };
       }
       .pageButton {
         padding: 0px 0px 0px 0px;
@@ -88,7 +101,7 @@
       .playerCardPic {
         height: 80px;
         width: 80px;
-        margin: 0px 15px 0px 0px;
+        margin: 0px 10px 0px 0px;
       }
       .searchMenuButton {
 /*        background-color: #f1f1f1;
@@ -145,17 +158,21 @@
           </template>
           <paper-button class="pageButton" on-click="_changePage" page-to="1" raised style="min-width: 50px">Last</paper-button>
         </div>
-        <iron-list items="[[mbrUsers]]" class="fullWidth flex" as="item" grid>
+        <iron-list items="[[mbrUsers]]" class="fullWidth flex horizontal center-justified layout" as="item" grid>
           <template>
-            <paper-card class="leaderboardCard">
-              <div class='card-content horizontal layout center'>
-              <div class="playerCardPic vertical center-justified layout center">
-                <iron-image src=[[item.pic_link]]></iron-image>
-              </div>
-              <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class</div>
-                <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
-              </div>  
-            </paper-card>
+            <div class="leaderboardGridItem">
+              <!-- <paper-card class="leaderboardCard">
+ -->                
+              <paper-card class="leaderboardCard2">
+                <div class='card-content horizontal layout center'>
+                <div class="playerCardPic vertical center-justified layout center">
+                  <iron-image src=[[item.pic_link]]></iron-image>
+                </div>
+                <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class</div>
+                  <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
+                </div>  
+              </paper-card>
+            </div>
           </template>
 
         </iron-list>
@@ -211,6 +228,13 @@
       //Helper functions
       _emptyBind(str) {
         return str ? str : 'None';
+      }
+      _calculateClass(num) {
+        if (num > 500) {
+          return 'S'; 
+        } else {
+          return 'C';
+        }
       }
       _changePage(e) {
         this.currentPage = e.target.getAttribute('page-to');

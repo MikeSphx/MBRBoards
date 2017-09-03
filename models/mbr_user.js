@@ -100,7 +100,6 @@ module.exports.getTopMbrUsers = function(callback, limit) {
 
 // Get Top MBR Users
 module.exports.getAlphabeticalMbrUsers = function(page, limit, callback) {
-	console.log(page);
 	var options = {
 		sort: {'name': 1},
 		page: page,
