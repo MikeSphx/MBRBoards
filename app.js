@@ -53,6 +53,15 @@ app.get('/api/mbr_users', function(request, response) {
 	});
 });
 
+// Get a user by MM id
+app.get('/api/mbr_users/id', function(request, response) {
+	var id = parseInt(request.query.id);
+	mbrUser.getMbrUserById(id, function(error, mbr_users) {
+		if (error) throw error;
+		response.json(mbr_users);
+	});
+});
+
 app.get('/api/mbr_users/alphabetical', function(request, response) {
 	var limit = parseInt(request.query.limit);
 	var page = parseInt(request.query.page);

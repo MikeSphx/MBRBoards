@@ -19,6 +19,7 @@
 <!-- Import my custom elements -->
 <link rel="import" href="../leaderboard-page/leaderboard-page.html">
 <link rel="import" href="../profiles-page/profiles-page.html">
+<link rel="import" href="../user-page/user-page.html">
 
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
 
@@ -227,6 +228,7 @@
 
           <leaderboard-page id="leaderboardElement" page="leaderboard"></leaderboard-page>
           <profiles-page id="profilesElement" page="profiles"></profiles-page>
+          <user-page id="userElement" page="user"></user-page>
         </iron-pages>
 
       </app-drawer-layout>
@@ -315,7 +317,7 @@
       _goToProfile(e) {
         var profileName = this._cleanName(e.target.profile.split('|')[0]);
         var profilePath = profileName + '.' + e.target.profile.split('|')[1];
-        this.set('route.path', '/profiles/'+profilePath);
+        this.set('route.path', '/user/'+profilePath);
       }
       _toggleMenu(e) {
         var drawerLayout = this.$.drawerLayout;
@@ -329,10 +331,16 @@
         return str ? str : 'None';
       }
       _calculateClass(num) {
-        if (num > 500) {
-          return 'S';
-        } else {
+        if (num >= 1000) {
+          return 'S'; 
+        } else if (num < 1000 & num >= 600) {
+          return 'A';
+        } else if (num < 600 & num >= 350) {
+          return 'B';
+        } else if (num < 350 & num >= 200) {
           return 'C';
+        } else {
+          return 'D';
         }
       }
       _calculateRank(num) {

@@ -127,11 +127,11 @@
     data="{{routeData}}"
     tail="{{subroute}}"></app-route>
     <!-- Profile view -->
-    <app-route id="appRoute"
+<!--     <app-route id="appRoute"
     route="{{route}}"
     pattern="/profiles/user/:user"
     data="{{routeData}}"
-    tail="{{subroute}}"></app-route>
+    tail="{{subroute}}"></app-route> -->
 
     <div id="main">
       <div id="top" class="fullWidth horizontal center-justified layout">
@@ -169,16 +169,14 @@
                   <iron-image src=[[item.pic_link]]></iron-image>
                 </div>
                 <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class</div>
-                  <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
+                  <paper-icon-button on-tap="_goToProfile" icon="social:person" profile="[[item.name]]|[[item.mm_id]]" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
                 </div>  
               </paper-card>
             </div>
           </template>
 
         </iron-list>
-
       </div>
-
     </div>
 
     <iron-ajax
@@ -230,11 +228,21 @@
         return str ? str : 'None';
       }
       _calculateClass(num) {
-        if (num > 500) {
+        if (num >= 1000) {
           return 'S'; 
-        } else {
+        } else if (num < 1000 & num >= 600) {
+          return 'A';
+        } else if (num < 600 & num >= 350) {
+          return 'B';
+        } else if (num < 350 & num >= 200) {
           return 'C';
+        } else {
+          return 'D';
         }
+      }
+      _cleanName(name) {
+        name = name.toLowerCase().replace(/[^a-zA-Z0-9-_]/g, '');
+        return name == '' ? 'null' : name;
       }
       _changePage(e) {
         this.currentPage = e.target.getAttribute('page-to');
@@ -247,6 +255,11 @@
                           {page: calcPage, disabled: calcPage == this.currentPage},
                           {page: calcPage + 1, disabled: (calcPage + 1) == this.currentPage},
                           {page: calcPage + 2, disabled: (calcPage + 2) == this.currentPage}];
+      }
+      _goToProfile(e) {
+        var profileName = this._cleanName(e.target.profile.split('|')[0]);
+        var profilePath = profileName + '.' + e.target.profile.split('|')[1];
+        this.set('route.path', '/user/'+profilePath);
       }
       _handleMbrUsers(data) {
         this.mbrUsers = data.detail.response.docs;

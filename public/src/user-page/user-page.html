@@ -1,0 +1,115 @@
+<dom-module id="user-page">
+  <template>
+
+    <style is="custom-style" include="iron-flex iron-flex-alignment">
+
+      :host {
+        display: block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #main {
+        height: 1500px;
+        /*background-color: red;*/
+      }
+      #container {
+        width: 60%;
+        height: 100%;
+        /*background-color: blue;*/
+      }
+      .fullWidth {
+        width: 100%;
+      }
+
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route id="appRoute"
+    route="{{route}}"
+    pattern="/user/:user"
+    data="{{routeData}}"
+    tail="{{subroute}}"></app-route>
+
+    <div>
+      [[mbrUser.name]]
+    </div>
+
+    <iron-ajax
+      id = "retrieveMbrUser"
+      url = "http://localhost:3000/api/mbr_users/id?id=1"
+      handle-as = "json"
+      on-response = "_handleMbrUser">
+    </iron-ajax>
+
+  </template>
+
+  <script>
+
+    class UserPage extends Polymer.Element {
+
+      static get is() { return 'user-page' }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this.requestMbrUser();
+      }
+
+      static get properties() {
+        return {
+          mbrUsers: {
+            type: Array
+          },
+          mbrUser: {
+            type: Object
+          },
+          mbrUserId: {
+            type: Number,
+            value: 1
+          },
+          oldRouteData: {
+            type: Object
+          }
+        }
+      }
+
+      static get observers() {
+        return [
+          '_userChangeHandler(routeData.user)'
+        ]
+      }
+
+      requestMbrUser() {
+        this._updateMbrUserId();
+        this._updateMbrUserRequest();
+        console.log(this.$.retrieveMbrUser.url);
+        this.$.retrieveMbrUser.generateRequest();
+      }
+
+      _handleMbrUser(data) {
+        this.mbrUser = data.detail.response;
+      }
+      _updateMbrUserId() {
+        if (typeof this.routeData.user == 'undefined') {
+          this.mbrUserId = 1;
+        } else {
+          this.mbrUserId = parseInt(this.routeData.user.split('.')[1]);
+        }
+      }
+      _updateMbrUserRequest() {
+        this.$.retrieveMbrUser.url = 'http://localhost:3000/api/mbr_users/id?id='+this.mbrUserId;
+      }
+      _userChangeHandler(user) {
+        console.log('_userChangeHandler ' + user);
+        this._updateMbrUserId();
+        this._updateMbrUserRequest();
+        this.$.retrieveMbrUser.generateRequest();
+        console.log(this.mbrUser);
+      }
+
+    }
+
+    customElements.define(UserPage.is, UserPage);
+
+  </script>
+</dom-module>

@@ -132,7 +132,7 @@
                 </div>
                 <div class="flex"><b>[[item.name]]</b><br><b>Faction: </b> [[_emptyBind(item.faction)]]<br><b>Rank: </b> [[item.rank]]</div>
                 <div class="flex"><b>AP:</b> [[item.base_ap]] - [[_calculateClass(item.base_ap)]] Class<br><b>Record: </b> <span>[[item.record.win]]W</span>/<span>[[item.record.lose]]L</span>/<span>[[item.record.tie]]T</span><br><b>Mesos:</b> [[item.meso]]</div>
-                <paper-icon-button icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
+                <paper-icon-button on-tap="_goToProfile" profile="[[item.name]]|[[item.mm_id]]" icon="social:person" class="playCardProfile relative self-end" style="top: 10px; left:5px"></paper-icon-button>
               </div>  
             </paper-card>
 
@@ -243,11 +243,21 @@
         return ((this.currentPage - 1) * 10) + num + 1;
       }
       _calculateClass(num) {
-        if (num > 500) {
+        if (num >= 1000) {
           return 'S'; 
-        } else {
+        } else if (num < 1000 & num >= 600) {
+          return 'A';
+        } else if (num < 600 & num >= 350) {
+          return 'B';
+        } else if (num < 350 & num >= 200) {
           return 'C';
+        } else {
+          return 'D';
         }
+      }
+      _cleanName(name) {
+        name = name.toLowerCase().replace(/[^a-zA-Z0-9-_]/g, '');
+        return name == '' ? 'null' : name;
       }
       _changePage(e) {
         console.log('changePage');
@@ -278,6 +288,11 @@
                           {page: calcPage, disabled: calcPage == this.currentPage},
                           {page: calcPage + 1, disabled: (calcPage + 1) == this.currentPage},
                           {page: calcPage + 2, disabled: (calcPage + 2) == this.currentPage}];
+      }
+      _goToProfile(e) {
+        var profileName = this._cleanName(e.target.profile.split('|')[0]);
+        var profilePath = profileName + '.' + e.target.profile.split('|')[1];
+        this.set('route.path', '/user/'+profilePath);
       }
       _sortChangeHandler(sort) {
         // TODO Known bug where routeData.leaderboardPage listener fires twice (https://github.com/PolymerElements/app-route/issues/129)
