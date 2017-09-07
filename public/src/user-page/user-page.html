@@ -9,17 +9,106 @@
         overflow: hidden;
       }
 
+      table, th, td {
+        border-collapse: collapse;
+      }
+      th, td {
+        padding: 5px 5px 5px 5px;
+        text-align: left;
+      }
+      th {
+        padding: 5px 5px 5px 10px;
+      }
+      table {
+        margin: 0px 0px 5px 0px;
+      }
+
+      #battleRecord {
+/*        --iron-list-items-container: {
+          height: 30px;
+        };*/
+      }
+      #bottom {
+        background-color: #0d1140;
+      }
       #main {
-        height: 1500px;
+        height: 1100px;
         /*background-color: red;*/
       }
-      #container {
-        width: 60%;
-        height: 100%;
+      #middle {
+        height: 400px;
+/*        background-color: #424242;*/
+        background-color: #E53935;
+      }
+      #top {
+        width: 70%;
+        height: 300px;
         /*background-color: blue;*/
+      }
+      #topChar {
+        margin: 0px 35px 0px 0px;
+      }
+      #topImage {
+        height: 300px;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        z-index: -1;
+      }
+      #topTitle {
+        margin: 0px 0px 0px 0px;
+        color: #ffffff;
+        font-weight: bolder;
+        font-size: 450%;
+        line-height: 110%;
+        text-shadow: 2px 2px 3px #000000;
+      }
+      #topTextContainer {
+
+        /*margin: 0px 0px 75px 0px;*/
+      }
+      #topSubtitle {
+        margin: 5px 0px 5px 0px;
+        color: #ffffff;
+        font-weight: bolder;
+        font-size: 225%;
+        line-height: 110%;
+        text-shadow: 2px 2px 3px #000000;
+      }
+
+      .container {
+        width: 70%;
+        height: 100%;
+      }
+      .fullHeight {
+        height: 100%;
       }
       .fullWidth {
         width: 100%;
+      }
+      .full {
+        height: 100%;
+        width: 100%;
+      }
+      .oddRow {
+        /*background-color: #e84d4a;*/
+        background-color: #EEEEEE;
+      }
+      .statsCard {
+        height: 200px;
+        width:90%; 
+        min-width: 250px;
+      }
+      .statsCardHeader {
+        height: 40px;
+        border-bottom: 1px solid #BDBDBD;
+        font-size: 125%;
+        font-weight: bold;
+      }
+      .tableHeader {
+        padding: 5px 5px 5px 5px;
+        text-align: center;
+        font-size: 125%;
       }
 
     </style>
@@ -31,8 +120,83 @@
     data="{{routeData}}"
     tail="{{subroute}}"></app-route>
 
-    <div>
-      [[mbrUser.name]]
+    <div id="main" class="vertical layout center">
+
+      <div id="top" class="horizontal center-justified layout end">
+        <iron-image id="topImage" class="fullWidth" src="./img/lake.png" sizing="cover"></iron-image>
+        <div id="topInfoContainer" class="full horizontal layout">
+          <div id="topChar" class="fullHeight vertical center-justified layout">
+            <paper-card style="height:100px; width: 100px;" class="vertical center-justified layout center">
+              <iron-image src=[[mbrUser.pic_link]]></iron-image>
+            </paper-card>
+          </div>
+          <div id="topTextContainer" class="fullHeight vertical center-justified layout">
+            <div id="topTitle">[[mbrUser.name]]
+            </div>
+            <template is="dom-if" if="[[_userHasFaction(mbrUser)]]">
+              <div id="topSubtitle">[[mbrUser.faction]]
+              </div>
+            </template>
+            <!-- <div id="topSubtitle">[[mbrUser.faction]]
+            </div> -->
+          </div>
+        </div>
+        <div class="flex">
+        </div>
+        <div id="topButtonContainer" class="horizontal layout">
+        </div>
+      </div>
+
+      <div id="middle" class="fullWidth horizontal center-justified layout">
+        <div class="container horizontal center-justified layout">
+          <!-- overview (AP, Class, Rank, Mesos) -->
+          <div class="fullHeight flex vertical center-justified layout start">
+            <paper-card class="statsCard vertical layout center">
+              <div class="statsCardHeader fullWidth horizontal center-justified layout center">Overview</div>
+              <div class="flex"></div>
+              <table class="fullWidth">
+                <tr class="oddRow">
+                  <th>AP</th>
+                  <td>[[mbrUser.base_ap]]</td>
+                </tr>
+                <tr>
+                  <th>Class</th>
+                  <td>[[_calculateClass(mbrUser.base_ap)]]</td>
+                </tr>
+                <tr class="oddRow">
+                  <th>Rank</th>
+                  <td>69</td>
+                </tr>
+                <tr>
+                  <th>Mesos</th>
+                  <td>[[mbrUser.meso]]</td>
+                </tr>
+              </table>
+            </paper-card>
+          </div>
+          <!-- win record (wins, losses, ties) -->
+          <div class="fullHeight flex vertical center-justified layout center">
+            <paper-card class="statsCard vertical layout center">
+              <div class="statsCardHeader fullWidth horizontal center-justified layout center">Rank History</div>
+            </paper-card>
+          </div>
+          <!-- battle record -->
+          <div class="fullHeight flex vertical center-justified layout end">
+            <paper-card class="statsCard vertical layout center">
+              <div class="statsCardHeader fullWidth horizontal center-justified layout center">Battle Record</div>
+              <iron-list id="battleRecord" class="fullWidth flex" items="[[battleRecord]]" as="item">
+                <template>
+                  <div>
+                    [[mbrUser.name]] vs. [[item.opponent]] : [[item.outcome]]
+                  </div>
+                </template>
+              </iron-list>
+            </paper-card>
+          </div>
+        </div>
+      </div>
+      <div id="bottom" class="flex fullWidth">
+      </div>
     </div>
 
     <iron-ajax
@@ -69,6 +233,69 @@
           },
           oldRouteData: {
             type: Object
+          },
+          battleRecord: {
+            type: Array,
+            value: [{
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    },
+                    {
+                      opponent: 'i_st',
+                      outcome: 'LOSE'
+                    }]
           }
         }
       }
@@ -86,6 +313,20 @@
         this.$.retrieveMbrUser.generateRequest();
       }
 
+      // Private methods (helper functions, event handlers)
+      _calculateClass(num) {
+        if (num >= 1000) {
+          return 'S'; 
+        } else if (num < 1000 & num >= 600) {
+          return 'A';
+        } else if (num < 600 & num >= 350) {
+          return 'B';
+        } else if (num < 350 & num >= 200) {
+          return 'C';
+        } else {
+          return 'D';
+        }
+      }
       _handleMbrUser(data) {
         this.mbrUser = data.detail.response;
       }
@@ -100,11 +341,17 @@
         this.$.retrieveMbrUser.url = 'http://localhost:3000/api/mbr_users/id?id='+this.mbrUserId;
       }
       _userChangeHandler(user) {
-        console.log('_userChangeHandler ' + user);
-        this._updateMbrUserId();
-        this._updateMbrUserRequest();
-        this.$.retrieveMbrUser.generateRequest();
-        console.log(this.mbrUser);
+        if (this.routeData != this.oldRouteData) {
+          this.oldRouteData = this.routeData;
+          console.log('_userChangeHandler ' + user);
+          this._updateMbrUserId();
+          this._updateMbrUserRequest();
+          this.$.retrieveMbrUser.generateRequest();
+          console.log(this.mbrUser);
+        }
+      }
+      _userHasFaction(user) {
+        return user.faction != '';
       }
 
     }
