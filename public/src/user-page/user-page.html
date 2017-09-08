@@ -76,6 +76,13 @@
         text-shadow: 2px 2px 3px #000000;
       }
 
+      .battleRecordItem {
+        background-color: #EEEEEE;
+        height: 40px;
+      }
+      .battleRecordOddItem {
+        height: 40px;
+      }
       .container {
         width: 70%;
         height: 100%;
@@ -104,6 +111,10 @@
         border-bottom: 1px solid #BDBDBD;
         font-size: 125%;
         font-weight: bold;
+      }
+      .statsCardSubheader {
+        height: 30px;
+        border-bottom: 1px solid #BDBDBD;
       }
       .tableHeader {
         padding: 5px 5px 5px 5px;
@@ -184,9 +195,10 @@
           <div class="fullHeight flex vertical center-justified layout end">
             <paper-card class="statsCard vertical layout center">
               <div class="statsCardHeader fullWidth horizontal center-justified layout center">Battle Record</div>
+              <div class="statsCardSubheader fullWidth horizontal center-justified layout center">Wins: 3 | Losses: 3 | Ties: 4</div>
               <iron-list id="battleRecord" class="fullWidth flex" items="[[battleRecord]]" as="item">
                 <template>
-                  <div>
+                  <div class$="[[_isBattleRecordItemOdd(index)]] vertical center-justified layout center">
                     [[mbrUser.name]] vs. [[item.opponent]] : [[item.outcome]]
                   </div>
                 </template>
@@ -296,6 +308,18 @@
                       opponent: 'i_st',
                       outcome: 'LOSE'
                     }]
+          },
+          rankHistory: {
+            type: Object,
+            value: [{
+
+                    },
+                    {
+
+                    },
+                    {
+                      
+                    }]
           }
         }
       }
@@ -329,6 +353,13 @@
       }
       _handleMbrUser(data) {
         this.mbrUser = data.detail.response;
+      }
+      _isBattleRecordItemOdd(index) {
+        if (index % 2 != 0) {
+          return 'battleRecordOddItem'
+        } else {
+          return 'battleRecordItem'
+        }
       }
       _updateMbrUserId() {
         if (typeof this.routeData.user == 'undefined') {
