@@ -1,7 +1,8 @@
 <dom-module id="user-page">
+  <link rel="import" href="../../../bower_components/c3/c3.css" rel="stylesheet">
   <template>
 
-    <style is="custom-style" include="iron-flex iron-flex-alignment">
+    <style is="custom-style" include=" c3-stylesheet iron-flex iron-flex-alignment">
 
       :host {
         display: block;
@@ -23,6 +24,9 @@
         margin: 0px 0px 5px 0px;
       }
 
+/*      #apTrendChart {
+        margin: 3px 0px 0px 0px;
+      }*/
       #battleRecord {
 /*        --iron-list-items-container: {
           height: 30px;
@@ -74,6 +78,10 @@
         font-size: 225%;
         line-height: 110%;
         text-shadow: 2px 2px 3px #000000;
+      }
+
+      #apTrendChart .c3-line-AP {
+        stroke-width: 2px;
       }
 
       .battleRecordItem {
@@ -188,7 +196,9 @@
           <!-- win record (wins, losses, ties) -->
           <div class="fullHeight flex vertical center-justified layout center">
             <paper-card class="statsCard vertical layout center">
-              <div class="statsCardHeader fullWidth horizontal center-justified layout center">Rank History</div>
+              <div class="statsCardHeader fullWidth horizontal center-justified layout center">AP Trend</div>
+              <div class="flex"></div>
+              <div id="apTrendChart" class="full horizontal center-justified layout"></div>
             </paper-card>
           </div>
           <!-- battle record -->
@@ -229,6 +239,7 @@
       connectedCallback() {
         super.connectedCallback();
         this.requestMbrUser();
+        this._generateApTrendChart();
       }
 
       static get properties() {
@@ -309,17 +320,12 @@
                       outcome: 'LOSE'
                     }]
           },
-          rankHistory: {
+          apTrend: {
             type: Object,
-            value: [{
-
-                    },
-                    {
-
-                    },
-                    {
-                      
-                    }]
+            value: {
+              timeseries: ['x', '2017-8-14', '2017-8-21', '2017-8-28', '2017-9-4'],
+              ap: ['AP', '0', '100', '400', '1200']
+            }
           }
         }
       }
@@ -333,7 +339,6 @@
       requestMbrUser() {
         this._updateMbrUserId();
         this._updateMbrUserRequest();
-        console.log(this.$.retrieveMbrUser.url);
         this.$.retrieveMbrUser.generateRequest();
       }
 
@@ -350,6 +355,41 @@
         } else {
           return 'D';
         }
+      }
+      _generateApTrendChart() {
+        var chart = c3.generate({
+            bindto: this.$.apTrendChart,
+            data: {
+              x: 'x',
+              columns: [
+                this.apTrend.timeseries,
+                this.apTrend.ap
+                // ,
+                // ['data2', 50, 20, 10, 40, 15, 25]
+              ]
+            },
+            axis: {
+              x: {
+                type: 'timeseries',
+                tick: {
+                  format: '%m-%d'
+                }
+              }
+            },
+            padding: {
+              top: 0,
+              right: 20,
+              bottom: 0,
+              left: 30,
+            },
+            color: {
+              pattern: ['#E53935']
+            },
+            size: {
+              width: 250,
+              height: 155
+            }
+        });
       }
       _handleMbrUser(data) {
         this.mbrUser = data.detail.response;
@@ -378,7 +418,6 @@
           this._updateMbrUserId();
           this._updateMbrUserRequest();
           this.$.retrieveMbrUser.generateRequest();
-          console.log(this.mbrUser);
         }
       }
       _userHasFaction(user) {

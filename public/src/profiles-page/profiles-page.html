@@ -42,7 +42,7 @@
         height: 100%;
       }
       #topContainerSearchMenu {
-        width: 100%;
+        width: 70%;
         height: 45px;
       }
       #topContainerSearchBar {
@@ -219,7 +219,6 @@
 
       connectedCallback() {
         super.connectedCallback();
-        console.log('profiles callback');
         this.$.retrieveMbrUsers.generateRequest();
       }
 
@@ -263,7 +262,6 @@
       }
       _handleMbrUsers(data) {
         this.mbrUsers = data.detail.response.docs;
-        console.log(this.mbrUsers);
       }
       _resetPage() {
         this.currentPage = 1;

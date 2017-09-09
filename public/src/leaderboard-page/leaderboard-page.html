@@ -263,7 +263,6 @@
         console.log('changePage');
         this.currentPage = e.target.getAttribute('page-to');
         this._generatePageArray();
-        //this._disableCurrentPageButton();
         this.set('routeData.leaderboardPage', e.target.getAttribute('page-to'));
       }
       _changeSort(e) {
@@ -273,13 +272,6 @@
           var sort = e.target.getAttribute('sort');
           this.set('route.path', '/leaderboard/'+sort+'/1');
         }
-      }
-      _disableCurrentPageButton() {
-        console.log('_disableCurrentPageButton');
-        console.log(this.currentPage);
-        var button = document.getElementById('page'+this.currentPage.toString());
-        console.log('page'+this.currentPage.toString());
-        console.log(button);
       }
       _generatePageArray() {
         var calcPage = (this.currentPage < 3) ? 3 : parseInt(this.currentPage);

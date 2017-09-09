@@ -16,12 +16,20 @@
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 
+<script src="../../../bower_components/d3/d3.min.js" charset="utf-8"></script>
+<script src="../../../bower_components/c3/c3.min.js"></script>
+
+<!-- Import style modules -->
+<link rel="import" href="../../css/c3-stylesheet/c3-stylesheet.html">
+
 <!-- Import my custom elements -->
 <link rel="import" href="../leaderboard-page/leaderboard-page.html">
 <link rel="import" href="../profiles-page/profiles-page.html">
 <link rel="import" href="../user-page/user-page.html">
 
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
+
+<!-- <meta http-equiv="content-type" content="text/html; charset=UTF8"> -->
 
 <dom-module id="my-app">
   <template>
@@ -290,8 +298,6 @@
       }
       connectedCallback() {
         super.connectedCallback();
-        console.log('connected callback');
-        console.log(this.routeData);
         this.$.top3Request.generateRequest();
       }
       changePage(e) {
