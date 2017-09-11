@@ -205,7 +205,7 @@
           <div class="fullHeight flex vertical center-justified layout end">
             <paper-card class="statsCard vertical layout center">
               <div class="statsCardHeader fullWidth horizontal center-justified layout center">Battle Record</div>
-              <div class="statsCardSubheader fullWidth horizontal center-justified layout center">Wins: 3 | Losses: 3 | Ties: 4</div>
+              <div class="statsCardSubheader fullWidth horizontal center-justified layout center">Wins: [[mbrUser.record.win]] | Losses: [[mbrUser.record.lose]] | Ties: [[mbrUser.record.tie]]</div>
               <iron-list id="battleRecord" class="fullWidth flex" items="[[battleRecord]]" as="item">
                 <template>
                   <div class$="[[_isBattleRecordItemOdd(index)]] vertical center-justified layout center">
