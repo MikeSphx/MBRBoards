@@ -114,6 +114,11 @@
         width:90%; 
         min-width: 250px;
       }
+      .statsCardBig {
+        height: 250px;
+        width:95%; 
+        min-width: 250px;
+      }
       .statsCardHeader {
         height: 40px;
         border-bottom: 1px solid #BDBDBD;
@@ -217,7 +222,22 @@
           </div>
         </div>
       </div>
-      <div id="bottom" class="flex fullWidth">
+
+      <div id="bottom" class="flex fullWidth horizontal center-justified layout">
+        <div class="container horizontal center-justified layout">
+          <!-- graph for distribution of stats -->
+          <div class="fullHeight flex vertical center-justified layout start">
+            <paper-card class="statsCardBig vertical layout center">
+              <div class="statsCardHeader fullWidth horizontal center-justified layout center">Stats</div>
+            </paper-card>
+          </div>
+          <!-- graph for displaying medal count -->
+          <div class="fullHeight flex vertical center-justified layout end">
+            <paper-card class="statsCardBig vertical layout center">
+              <div class="statsCardHeader fullWidth horizontal center-justified layout center">Medals</div>
+            </paper-card>
+          </div>
+        </div>
       </div>
     </div>
 
