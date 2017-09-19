@@ -141,3 +141,10 @@ module.exports.getMbrUserById = function(id, callback) {
 module.exports.addMbrUser = function(mbrUser, callback) {
 	mbrUser.create(mbrUser, callback);
 }
+
+// Find MBR user by name
+module.exports.getMbrUserByName = function(name, callback) {
+	mbrUser.find({name: {'$regex': name}})
+			.limit(10)
+			.exec(callback);
+}

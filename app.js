@@ -105,18 +105,20 @@ app.get('/api/mbr_users/leaderboard', function(request, response) {
 		// 	response.json(mbrUsers);
 		// });
 	} else {
-		//console.log('non-search query');
 		mbrUser.getMbrLeaderboardPage(sort, page, function(error, mbrUsers) {
 			if (error) throw error;
 			response.json(mbrUsers);
 		});
 	}
-	//console.log(sort);
-	//console.log(page);
-	//console.log(search);
 });
 
-// app.get('/api/mbr_users/leaderboard/')
+app.get('/api/mbr_users/by_name', function(request, response) {
+	var name = request.query.name;
+		mbrUser.getMbrUserByName(name, function(error, mbr_users) {
+		if (error) throw error;
+		response.json(mbr_users);
+	});
+});
 
 app.get('*', function(req, res) {
 	res.sendFile("public/index.html", {root: '.'});
