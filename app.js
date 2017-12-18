@@ -16,7 +16,15 @@ mongoose.connect(dbCredentials.mLabUrl);
 var db = mongoose.connection;
 
 var path = require('path');
+
+app.get('/', function (req, res) {
+	console.log('hello');
+	res.redirect('/home');
+})
+
 app.use('/', express.static(path.join(__dirname, 'public')));
+
+
 
 //app.get('/', function(request, response) {
 	//response.sendFile(path.join(__dirname, '/public/index.html'));
